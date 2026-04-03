@@ -1,40 +1,52 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Records from './pages/Records'
-import Users from './pages/Users'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import AuthPage from './pages/AuthPage'
+import MainPage from './pages/MainPage'
+
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth()
+  
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />
+  }
+
+  return children
+}
+
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth()
+  
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  
+  if (user) {
+    return <Navigate to="/" replace />
+  }
+
+  return children
+}
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/"
+          <Route 
+            path="/auth" 
+            element={
+              <PublicRoute>
+                <AuthPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <MainPage />
               </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/records"
-            element={
-              <ProtectedRoute>
-                <Records />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <Users />
-              </ProtectedRoute>
-            }
+            } 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
