@@ -7,7 +7,7 @@ import createFinancialTable from "./data/createFinancial.js"
 import usersRoutes from "./routes/usersRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
 import analyzerRoutes from "./routes/analyzerRoutes.js"
-
+import authRoutes from "./routes/authRoutes.js"
 
 dotenv.config()
 
@@ -28,16 +28,16 @@ const initDb = async () => {
 }
 initDb()
 
-app.use("/api/users", usersRoutes)
+app.use("/api/user", usersRoutes)
 app.use("/api/admin", adminRoutes)
 app.use("/api/analyzer", analyzerRoutes)
-
+app.use("/api/auth", authRoutes)
 app.get('/', async (req, res) => {
-    res.send("The database name is :" + process.env.DB_NAME)
+  res.send("The database name is :" + process.env.DB_NAME)
 })
 
 app.use(errorHandling)
 
-app.listen(8080,()=>{
-    console.log(`Server is running on port 8080`)
+app.listen(8080, () => {
+  console.log(`Server is running on port 8080`)
 })

@@ -5,7 +5,6 @@ const AuthContext = createContext({})
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [role, setRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -13,8 +12,6 @@ export const AuthProvider = ({ children }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user)
-        // For simplicity, we get role from metadata if stored, or default to USER
-        setRole(session.user.user_metadata?.role || 'USER')
       }
       setLoading(false)
     })
@@ -23,10 +20,8 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setUser(session.user)
-        setRole(session.user.user_metadata?.role || 'USER')
       } else {
         setUser(null)
-        setRole(null)
       }
       setLoading(false)
     })
@@ -35,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, role, loading }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   )

@@ -1,4 +1,4 @@
-import { getRegisteredService } from "../models/authModel.js";
+import { getUserRoleService, getRegisteredService } from "../models/authModel.js";
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({
@@ -6,9 +6,21 @@ const handleResponse = (res, status, message, data = null) => {
     });
 };
 
-const getRegisteredController = async (req, res, next) => {
-    const result = await getRegisteredService();
-    handleResponse(res, 200, "Registered users fetched successfully", result);
+export const getRegistered = async (req, res, next) => {
+    try {
+
+        const result = await getRegisteredService();
+        handleResponse(res, 200, "Registered users fetched successfully", result);
+    }
+    catch (err) { next(err) }
 };
 
-export default getRegisteredController;
+export const getUserRole = async (req, res, next) => {
+    try {
+        const result = await getUserRoleService(req.params.id);
+        handleResponse(res, 200, "User role fetched successfully", result);
+    }
+    catch (err) {
+        next(err)
+    }
+}
