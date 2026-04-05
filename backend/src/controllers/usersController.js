@@ -1,4 +1,4 @@
-import { createUserService, createTransactionService, getMyTransactionsService } from "../models/userModel.js"
+import { createUserService, createTransactionService, getMyTransactionsService, updateTransactionService } from "../models/userModel.js"
 
 const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({
@@ -33,6 +33,20 @@ export const getMyTransactions = async (req, res, next) => {
   try {
     const result = await getMyTransactionsService(req.params.id);
     handleResponse(res, 200, "Transactions fetched successfully", result);
+  }
+  catch (err) {
+    next(err)
+  }
+}
+
+export const updateTransaction = async (req, res, next) => {
+  try {
+    const { amount, type, category, notes, userId } = req.body;
+    const result = await updateTransactionService(req.params.id, userId, amount, type, category, notes);
+    if (!result) {
+      return handleResponse(res, 404, "Transaction not found or unauthorized");
+    }
+    handleResponse(res, 200, "Transaction updated successfully", result);
   }
   catch (err) {
     next(err)

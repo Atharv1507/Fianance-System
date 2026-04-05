@@ -1,12 +1,14 @@
 import { useState, useEffect, useContext, forwardRef, useImperativeHandle } from 'react'
 import axios from 'axios'
 import { UserContext } from '../context/UserContext'
+import EditTransactionModal from './EditTransactionModal'
 
 const MyTransactions = forwardRef(function MyTransactions(props, ref) {
   const { user } = useContext(UserContext)
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(false)
   const [filterType, setFilterType] = useState('ALL')
+  const [editingTxn, setEditingTxn] = useState(null)
 
   const fetchTransactions = async () => {
     if (!user?.id) return
@@ -123,7 +125,7 @@ const MyTransactions = forwardRef(function MyTransactions(props, ref) {
         ) : (
           <div className="divide-y divide-gray-100">
             {filtered.map((record) => (
-              <div key={record.id} className="px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition">
+              <div key={record.id} className="px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition group">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                     record.type === 'INCOME'
@@ -144,16 +146,36 @@ const MyTransactions = forwardRef(function MyTransactions(props, ref) {
                     </p>
                   </div>
                 </div>
-                <p className={`font-bold text-sm whitespace-nowrap ${
-                  record.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {record.type === 'INCOME' ? '+' : '-'}₹{fmt(parseFloat(record.amount))}
-                </p>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setEditingTxn(record)}
+                    className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition opacity-0 group-hover:opacity-100"
+                    title="Edit transaction"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </button>
+                  <p className={`font-bold text-sm whitespace-nowrap ${
+                    record.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {record.type === 'INCOME' ? '+' : '-'}₹{fmt(parseFloat(record.amount))}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Edit Transaction Modal */}
+      <EditTransactionModal
+        isOpen={!!editingTxn}
+        transaction={editingTxn}
+        onClose={() => setEditingTxn(null)}
+        onUpdated={() => {
+          fetchTransactions()
+          setEditingTxn(null)
+        }}
+      />
     </div>
   )
 })

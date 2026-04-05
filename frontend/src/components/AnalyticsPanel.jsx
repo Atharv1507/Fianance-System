@@ -43,7 +43,7 @@ export default function AnalyticsPanel() {
   const fmt = (n) => n.toLocaleString('en-IN', { minimumFractionDigits: 2 })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-10">
       {/* Summary Cards */}
       {!loading && records.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -165,20 +165,17 @@ export default function AnalyticsPanel() {
                       <span className="font-medium text-gray-900">{record.category}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        record.type === 'INCOME'
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${record.type === 'INCOME'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-red-100 text-red-700'
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          record.type === 'INCOME' ? 'bg-green-500' : 'bg-red-500'
-                        }`} />
+                        }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${record.type === 'INCOME' ? 'bg-green-500' : 'bg-red-500'
+                          }`} />
                         {record.type}
                       </span>
                     </td>
-                    <td className={`px-5 py-3.5 text-right font-semibold whitespace-nowrap ${
-                      record.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <td className={`px-5 py-3.5 text-right font-semibold whitespace-nowrap ${record.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       {record.type === 'INCOME' ? '+' : '-'}₹{fmt(parseFloat(record.amount))}
                     </td>
                     <td className="px-5 py-3.5 text-gray-500 max-w-xs truncate">

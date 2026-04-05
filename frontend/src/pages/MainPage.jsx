@@ -10,6 +10,7 @@ export default function MainPage() {
   const { userData, user, role, status } = useContext(UserContext)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [txnModalOpen, setTxnModalOpen] = useState(false)
+  const [AnalyticsModal, setAnalyticsModal] = useState(false)
   const txnListRef = useRef(null)
 
   const handleLogout = async () => {
@@ -48,15 +49,6 @@ export default function MainPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Users</h3>
-                <p className="text-gray-600 text-sm mb-4">Add, view, and delete users from the system.</p>
-                <button className="text-blue-600 text-sm font-medium hover:underline">View Users &rarr;</button>
-              </div>
-
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
                 <div className="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 </div>
@@ -69,9 +61,9 @@ export default function MainPage() {
                 <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">View Records</h3>
-                <p className="text-gray-600 text-sm mb-4">Access system audit logs and financial records.</p>
-                <button className="text-purple-600 text-sm font-medium hover:underline">View Records &rarr;</button>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{AnalyticsModal ? "Hide Records" : "View Records"}</h3>
+                < p className="text-gray-600 text-sm mb-4">Access system audit logs and financial records.</p>
+                <button onClick={() => { setAnalyticsModal(!AnalyticsModal) }} className="text-purple-600 text-sm font-medium hover:underline">{AnalyticsModal ? "Hide Records" : "View Records"} &rarr;</button>
               </div>
 
             </div>
@@ -79,7 +71,7 @@ export default function MainPage() {
         )}
 
         {/* ANALYST VIEW */}
-        {role === 'ANALYST' && <AnalyticsPanel />}
+        {(role === 'ANALYST' || (role === 'ADMIN' && AnalyticsModal)) && <AnalyticsPanel />}
 
         {/* USER VIEW */}
         {role === 'USER' && status === 'INACTIVE' && (

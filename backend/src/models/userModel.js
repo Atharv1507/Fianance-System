@@ -24,3 +24,14 @@ export const getMyTransactionsService = async (id) => {
         console.log(err)
     }
 }
+export const updateTransactionService = async (txnId, userId, amount, type, category, notes) => {
+    try {
+        const result = await pool.query(
+            "UPDATE financial_records SET amount = $1, type = $2, category = $3, notes = $4, updated_at = NOW() WHERE id = $5 AND created_by = $6 RETURNING *",
+            [amount, type, category, notes, txnId, userId]
+        )
+        return result.rows[0];
+    } catch (err) {
+        console.log(err)
+    }
+}
