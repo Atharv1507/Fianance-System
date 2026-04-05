@@ -9,6 +9,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const { user } = useAuth();
     const [role, setRole] = useState('')
+    const [status, setStatus] = useState('')
     const [userData, setUserData] = useState(null);
     const getRole = async () => {
         if (!user) return
@@ -16,9 +17,13 @@ export const UserProvider = ({ children }) => {
             headers: {
                 Authorization: `Bearer ${user?.access_token}`
             }
-        }).then((res) => { setRole(res.data.data.role || 'USER') }).catch((err) => {
+        }).then((res) => {
+            setRole(res.data.data.role || 'USER')
+            setStatus(res.data.data.status || 'INACTIVE')
+        }).catch((err) => {
             console.log(err);
             setRole('USER')
+            setStatus('INACTIVE')
         })
     }
     useEffect(() => {
@@ -26,7 +31,7 @@ export const UserProvider = ({ children }) => {
     }, [user])
 
     return (
-        <UserContext.Provider value={{ userData, user, role }}>
+        <UserContext.Provider value={{ userData, user, role, status }}>
             {children}
         </UserContext.Provider>
     );

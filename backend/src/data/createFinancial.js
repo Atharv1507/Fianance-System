@@ -7,7 +7,6 @@ const createFinancialTable = async () => {
             amount      NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
             type        TEXT NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
             category    TEXT NOT NULL,
-            date        DATE NOT NULL,
             notes       TEXT,
             created_by  UUID NOT NULL REFERENCES profiles(id),
             created_at  TIMESTAMPTZ DEFAULT NOW(),

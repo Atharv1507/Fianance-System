@@ -1,18 +1,20 @@
-import { useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useEffect, useState, useContext, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { UserContext } from '../context/UserContext'
-import { useContext } from 'react'
+import EditUserModal from '../components/EditUserModal'
+import AnalyticsPanel from '../components/AnalyticsPanel'
+import CreateTransactionModal from '../components/CreateTransactionModal'
+import MyTransactions from '../components/MyTransactions'
 
 export default function MainPage() {
-  const { userData, user, role } = useContext(UserContext)
+  const { userData, user, role, status } = useContext(UserContext)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [txnModalOpen, setTxnModalOpen] = useState(false)
+  const txnListRef = useRef(null)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
   }
-  useEffect(() => {
-
-  }, [])
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200">
@@ -60,7 +62,7 @@ export default function MainPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Update Users</h3>
                 <p className="text-gray-600 text-sm mb-4">Modify existing user roles and active status.</p>
-                <button className="text-green-600 text-sm font-medium hover:underline">Edit Users &rarr;</button>
+                <button onClick={() => setEditModalOpen(true)} className="text-green-600 text-sm font-medium hover:underline">Edit Users &rarr;</button>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
@@ -77,29 +79,62 @@ export default function MainPage() {
         )}
 
         {/* ANALYST VIEW */}
-        {role === 'ANALYST' && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 border-b pb-4 mb-4">Analyst Workspace</h3>
-            <p className="text-gray-600">You have access to view and analyze records, but cannot modify users.</p>
-            {/* Example mock content */}
-            <div className="mt-4 h-32 bg-gray-50 border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400">
-              [Analytical Charts Placeholder]
+        {role === 'ANALYST' && <AnalyticsPanel />}
+
+        {/* USER VIEW */}
+        {role === 'USER' && status === 'INACTIVE' && (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="bg-white rounded-2xl shadow-sm border border-orange-200 p-8 max-w-md text-center">
+              <div className="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Account Inactive</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Your account is currently inactive. Please contact an administrator to activate your account and gain access to the dashboard.
+              </p>
+              <div className="mt-6 px-4 py-3 bg-orange-50 rounded-xl">
+                <p className="text-xs text-orange-700 font-medium">
+                  📧 Reach out to your system administrator for assistance.
+                </p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* USER VIEW */}
-        {role === 'USER' && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 border-b pb-4 mb-4">My Account</h3>
-            <p className="text-gray-600">Welcome to your personal dashboard. You have standard access.</p>
-            <div className="mt-4 p-4 bg-blue-50 text-blue-700 rounded-lg">
-              No new notifications.
+        {role === 'USER' && status === 'ACTIVE' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">My Finances</h3>
+                <p className="text-sm text-gray-500">Track your income and expenses</p>
+              </div>
+              <button
+                onClick={() => setTxnModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-700 transition shadow-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                Add Transaction
+              </button>
             </div>
+            <MyTransactions ref={txnListRef} />
           </div>
         )}
 
       </main>
+
+      {/* Edit User Modal */}
+      <EditUserModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} />
+
+      {/* Create Transaction Modal */}
+      <CreateTransactionModal
+        isOpen={txnModalOpen}
+        onClose={() => setTxnModalOpen(false)}
+        onCreated={() => {
+          if (txnListRef.current?.refresh) txnListRef.current.refresh()
+        }}
+      />
     </div>
   )
 }

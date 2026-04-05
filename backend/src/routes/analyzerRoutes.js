@@ -1,8 +1,8 @@
 import { Router } from "express"
-import { getFinancialSummary } from "../controllers/analyzerController.js"
+import { getAllRecords } from "../controllers/analyzerController.js"
 
 const router = Router()
 
-router.get("/financial-summary", getFinancialSummary)
+router.get('/allRecords', getAllRecords)
 
 export default router

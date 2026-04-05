@@ -6,6 +6,6 @@ export const getRegisteredService = async () => {
 }
 
 export const getUserRoleService = async (id) => {
-    const result = await pool.query("SELECT role FROM profiles WHERE id = $1", [id])
+    const result = await pool.query("SELECT role, status FROM profiles WHERE id = $1", [id])
     return result.rows[0]
 }

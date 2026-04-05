@@ -1,4 +1,4 @@
-import { getUsersService, editUserService } from "../models/AdminModel.js";
+import { getUsersService, editUserService, deleteUserService } from "../models/adminModel.js";
 
 const handleResponse = (res, status, message, data = null) => {
   res.status(status).json({
